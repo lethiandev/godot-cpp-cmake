@@ -27,6 +27,14 @@ endif()
 
 project(GodotCpp VERSION 1.0.0 LANGUAGES CXX)
 
+# force linking with a static runtime library on msvc compilers
+# TODO: add an option to configure it
+if (MSVC)
+	string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+	string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+	string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+endif()
+
 # generate c++ bindings for godot api
 # uses a binding_generator.py script from the godot-cpp submodule
 # executes the generator on a cmake configuration step only once
