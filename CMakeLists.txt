@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.10.0 FATAL_ERROR)
 
+# allow custom path for json api file
+set(GODOT_API_JSON "" CACHE PATH "Path to godot_api.json file for bindings generator")
+
 # CMAKE_BUILD_TYPE cannot be empty
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Debug")
@@ -42,7 +45,7 @@ message(STATUS "Generating Godot C++ binding source files...")
 
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/godot-cpp/src/__icalls.cpp")
 	execute_process(
-		COMMAND python "${CMAKE_CURRENT_SOURCE_DIR}/generate.py"
+		COMMAND python "${CMAKE_CURRENT_SOURCE_DIR}/generate.py" "${GODOT_API_JSON}"
 		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/godot-cpp"
 	)
 else()
