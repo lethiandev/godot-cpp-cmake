@@ -43,7 +43,7 @@ endif()
 # executes the generator on a cmake configuration step only once
 message(STATUS "Generating Godot C++ binding source files...")
 
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/godot-cpp/src/__icalls.cpp")
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/godot-cpp/src/gen/__icalls.cpp")
 	set(GENERATOR_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/generate.py")
 
 	# Add godot_api.json path as the generator parameter
@@ -61,7 +61,7 @@ endif()
 
 # list all generated source files
 # the source files may vary between the API versions, use files globbing
-file(GLOB GENERATED_SOURCE_FILES "godot-cpp/src/*.cpp")
+file(GLOB GENERATED_SOURCE_FILES "godot-cpp/src/gen/*.cpp")
 
 # add godot-cpp library target
 add_library(godot-cpp STATIC
@@ -78,6 +78,7 @@ add_library(godot-cpp STATIC
 	godot-cpp/src/core/Rect2.cpp
 	godot-cpp/src/core/RID.cpp
 	godot-cpp/src/core/String.cpp
+	godot-cpp/src/core/TagDB.cpp
 	godot-cpp/src/core/Transform.cpp
 	godot-cpp/src/core/Transform2D.cpp
 	godot-cpp/src/core/Variant.cpp
@@ -90,6 +91,7 @@ target_include_directories(godot-cpp PUBLIC
 	godot-cpp/godot_headers
 	godot-cpp/include
 	godot-cpp/include/core
+	godot-cpp/include/gen
 )
 
 target_compile_features(godot-cpp PUBLIC

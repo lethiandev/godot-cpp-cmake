@@ -2,6 +2,8 @@
 
 This project provides CMake scripts for compiling a Godot C++ bindings to simplify the cross-platform library building.
 
+CMake scripts are updated to work with Nativescript 1.1 API (Godot 3.1), if you're looking for Nativescript 1.0 compatible version with Godot 3.0, checkout 3.0 branch instead.
+
 First of all, clone this repo with a `--recurse-submodules` option. It'll clone the repo with the required submodules as well.
 
 ## Compiling
