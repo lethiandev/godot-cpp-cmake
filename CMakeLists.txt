@@ -44,8 +44,15 @@ endif()
 message(STATUS "Generating Godot C++ binding source files...")
 
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/godot-cpp/src/__icalls.cpp")
+	set(GENERATOR_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/generate.py")
+
+	# Add godot_api.json path as the generator parameter
+	if (GODOT_API_JSON)
+		set(GENERATOR_COMMAND "${GENERATOR_COMMAND}" "${GODOT_API_JSON}")
+	endif()
+
 	execute_process(
-		COMMAND python "${CMAKE_CURRENT_SOURCE_DIR}/generate.py" "${GODOT_API_JSON}"
+		COMMAND python ${GENERATOR_COMMAND}
 		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/godot-cpp"
 	)
 else()
