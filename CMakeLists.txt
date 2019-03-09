@@ -1,11 +1,8 @@
 cmake_minimum_required(VERSION 3.10.0 FATAL_ERROR)
 
-# allow custom path for json api file
+# GODOT_API_JSON variable is REQUIRED
 set(GODOT_API_JSON "" CACHE PATH "Path to godot_api.json file for bindings generator")
-
-# godot-cpp repo doesn't provide default godot_api.json file anymore
-# check if GODOT_API_JSON variable is configured properly
-if (EXISTS "${GODOT_API_JSON}" AND NOT IS_DIRECTORY "${GODOT_API_JSON}")
+if (NOT EXISTS "${GODOT_API_JSON}" OR IS_DIRECTORY "${GODOT_API_JSON}")
 	message(FATAL_ERROR "Path GODOT_API_JSON to godot_api.json file is required")
 endif()
 
@@ -14,47 +11,35 @@ if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
-# limit CMAKE_BUILD_TYPE up to Debug and Release targets
+# Allow CMAKE_BUILD_TYPE only to be one of the Debug and Release targets
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 if(NOT ${CMAKE_BUILD_TYPE} IN_LIST CMAKE_CONFIGURATION_TYPES)
 	message(FATAL_ERROR "CMAKE_BUILD_TYPE can be one of the [Release|Debug] options")
 endif()
 
-# setup Android build config compatible with a Godot template apk
+# Default Android settings to follow Godot's build
+# Use $ANDROID_NDK_ROOT/build/cmake/android.toolchain.cmake toolchain
 if(CMAKE_SYSTEM_NAME STREQUAL Android)
-	message(STATUS "Android build setup")
-	set(CMAKE_ANDROID_API 27 CACHE STRING "Android target API level")
-	set(CMAKE_ANDROID_API_MIN 18 CACHE STRING "Android minimal API level")
-	set(CMAKE_ANDROID_ARCH_ABI armeabi-v7a CACHE STRING "Android target architecture")
-	# prefer godot compatible runtime (instead of newer libc++)
-	set(CMAKE_ANDROID_STL_TYPE gnustl_static)
-	# allow only clang toolchain
-	set(CMAKE_ANDROID_NDK_TOOLCHAIN_VERSION clang)
-	# enable neon floating point support
-	set(CMAKE_ANDROID_ARM_NEON ON)
+	set(ANDROID_PLATFORM "platform-28" CACHE STRING "Android target platform API level")
+	set(ANDROID_ABI armeabi-v7a CACHE STRING "Android target ABI architecture")
+	set(ANDROID_TOOLCHAIN clang)
+	set(ANDROID_STL c++_shared)
 endif()
 
 project(GodotCpp VERSION 1.0.0 LANGUAGES CXX)
 
-# force linking with a static runtime library on msvc compilers
-# TODO: add an option to configure it
+# Force MSVC to statically linking with CRT
 if (MSVC)
 	string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 	string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 	string(REPLACE "/MD" "/MT" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
 endif()
 
-# generate c++ bindings for godot api
-# uses a binding_generator.py script from the godot-cpp submodule
-# executes the generator on a cmake configuration step only once
+# Generate Godot's GDNative <-> C++ bindings using JSON file
 message(STATUS "Generating Godot C++ binding source files...")
-
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/godot-cpp/src/gen/__icalls.cpp")
 	set(GENERATOR_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/generate.py")
-
-	# Add godot_api.json path as the generator parameter
 	set(GENERATOR_COMMAND "${GENERATOR_COMMAND}" "${GODOT_API_JSON}")
-
 	execute_process(
 		COMMAND python ${GENERATOR_COMMAND}
 		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/godot-cpp"
@@ -63,57 +48,37 @@ else()
 	message(STATUS "Bindings are already generated")
 endif()
 
-# list all generated source files
-# the source files may vary between the API versions, use files globbing
-file(GLOB GENERATED_SOURCE_FILES "godot-cpp/src/gen/*.cpp")
+# List all binding C++ source files
+file(GLOB GDNATIVECPP_CORE_SOURCE_FILES "godot-cpp/src/core/*.cpp")
+file(GLOB GDNATIVECPP_GENERATED_SOURCE_FILES "godot-cpp/src/gen/*.cpp")
 
-# add godot-cpp library target
-add_library(godot-cpp STATIC
-	godot-cpp/src/core/AABB.cpp
-	godot-cpp/src/core/Array.cpp
-	godot-cpp/src/core/Basis.cpp
-	godot-cpp/src/core/Color.cpp
-	godot-cpp/src/core/Dictionary.cpp
-	godot-cpp/src/core/GodotGlobal.cpp
-	godot-cpp/src/core/NodePath.cpp
-	godot-cpp/src/core/Plane.cpp
-	godot-cpp/src/core/PoolArrays.cpp
-	godot-cpp/src/core/Quat.cpp
-	godot-cpp/src/core/Rect2.cpp
-	godot-cpp/src/core/RID.cpp
-	godot-cpp/src/core/String.cpp
-	godot-cpp/src/core/TagDB.cpp
-	godot-cpp/src/core/Transform.cpp
-	godot-cpp/src/core/Transform2D.cpp
-	godot-cpp/src/core/Variant.cpp
-	godot-cpp/src/core/Vector2.cpp
-	godot-cpp/src/core/Vector3.cpp
-	${GENERATED_SOURCE_FILES}
+# Create library target
+add_library(GodotCppLibrary STATIC
+	${GDNATIVECPP_CORE_SOURCE_FILES}
+	${GDNATIVECPP_GENERATED_SOURCE_FILES}
 )
 
-target_include_directories(godot-cpp PUBLIC
+target_include_directories(GodotCppLibrary PUBLIC
 	godot-cpp/godot_headers
 	godot-cpp/include
 	godot-cpp/include/core
 	godot-cpp/include/gen
 )
 
-target_compile_features(godot-cpp PUBLIC
+target_compile_features(GodotCppLibrary PUBLIC
 	cxx_std_14
 )
 
-# differ library names based on build setup
-# the formula is godot-cpp.[system].[opt?].[arch].[lib|a]
+# Build library name for the library
+# The formula is: godot-cpp.[system].[opt?].[arch].[lib|a]
 if(CMAKE_SYSTEM_NAME STREQUAL Android)
-	set(LIB_SUFFIX_DEBUG "android.${CMAKE_ANDROID_ARCH_ABI}")
-	set(LIB_SUFFIX_RELEASE "android.opt.${CMAKE_ANDROID_ARCH_ABI}")
+	set(LIB_SUFFIX_DEBUG "android.${ANDROID_ABI}")
+	set(LIB_SUFFIX_RELEASE "android.opt.${ANDROID_ABI}")
 else()
-	message(STATUS "System name: ${CMAKE_SYSTEM_NAME}")
 	if(WIN32)
 		set(LIB_SUFFIX_DEBUG "windows")
 		set(LIB_SUFFIX_RELEASE "windows.opt")
 	elseif(UNIX OR CMAKE_SYSTEM_NAME STREQUAL "Linux")
-		message(STATUS "Name were set")
 		set(LIB_SUFFIX_DEBUG "x11")
 		set(LIB_SUFFIX_RELEASE "x11.opt")
 	endif()
@@ -127,7 +92,8 @@ else()
 	endif()
 endif()
 
-set_target_properties(godot-cpp PROPERTIES
+# Configure the library name and output path
+set_target_properties(GodotCppLibrary PROPERTIES
 	OUTPUT_NAME_DEBUG "godot-cpp.${LIB_SUFFIX_DEBUG}"
 	OUTPUT_NAME_RELEASE "godot-cpp.${LIB_SUFFIX_RELEASE}"
 	ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
