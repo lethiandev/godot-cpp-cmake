@@ -1,26 +1,24 @@
 # GodotCpp module find script for CMake generator
 #
-# Copy /cmake directory to your own project's root path
-# Also setup GODOT_CPP_PATH variable pointing to the godot-cpp-cmake repo
-# i.e. cmake -G Ninja -DGODOT_CPP_PATH="<godot-cpp-cmake>" ../..
-# Don't forget about setting up the CMAKE_MODULE_PATH variable too
+# Required variables to define:
+# GODOT_CPP_PATH - points on root path of godot-cpp-cmake repository
 #
 # Repo: https://github.com/lethiandev/godot-cpp-cmake
 # Emitted targets: GodotCpp::GodotCpp
 cmake_minimum_required(VERSION 3.10.0 FATAL_ERROR)
 
 # Store GODOT_CPP_PATH as cache variable
-set(GODOT_CPP_PATH "" CACHE PATH "Path to the godot-cpp-cmake repository")
+set(GODOT_CPP_PATH "" CACHE PATH "Path to godot-cpp-cmake repository")
 
 # Require for GODOT_CPP_PATH path
 if(NOT IS_DIRECTORY "${GODOT_CPP_PATH}")
-	message(FATAL_ERROR "The GODOT_CPP_PATH path is required")
+	message(FATAL_ERROR "The GODOT_CPP_PATH variable is required")
 endif()
 
 # Library name to find
 if(CMAKE_SYSTEM_NAME STREQUAL Android)
-	set(GODOT_CPP_LIB_SUFFIX_DEBUG "android.${CMAKE_ANDROID_ARCH_ABI}")
-	set(GODOT_CPP_LIB_SUFFIX_RELEASE "android.opt.${CMAKE_ANDROID_ARCH_ABI}")
+	set(GODOT_CPP_LIB_SUFFIX_DEBUG "android.${ANDROID_ABI}")
+	set(GODOT_CPP_LIB_SUFFIX_RELEASE "android.opt.${ANDROID_ABI}")
 else()
 	if(WIN32)
 		set(GODOT_CPP_LIB_SUFFIX_DEBUG "windows")
@@ -45,6 +43,12 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 	set(GODOT_CPP_LIBRARY_NAME "${GODOT_CPP_LIBRARY_NAME}.${GODOT_CPP_LIB_SUFFIX_RELEASE}")
 else()
 	set(GODOT_CPP_LIBRARY_NAME "${GODOT_CPP_LIBRARY_NAME}.${GODOT_CPP_LIB_SUFFIX_DEBUG}")
+endif()
+
+# Fix Android's CMake Toolchain to allow finding host libraries
+if(CMAKE_SYSTEM_NAME STREQUAL Android)
+	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
+	set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 endif()
 
 # Find include directories
