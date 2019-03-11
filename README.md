@@ -8,7 +8,7 @@ To begin, clone this repo with `--recurse-submodules` option. It'll clone the re
 
 ## Prerequisite
 
-You need [CMake](https://cmake.org/) generator at least 3.10 version and [Android SDK](https://developer.android.com/studio) with NDK bundle. Optionally you can use [Ninja build system](https://ninja-build.org/), my personal choice, but these CMake scripts should work with any build system.
+You need [CMake](https://cmake.org/) generator at least 3.10 version, [Python](https://www.python.org/) for GDNative C++ bindings generator and [Android SDK](https://developer.android.com/studio) with NDK bundle. Optionally you can use [Ninja build system](https://ninja-build.org/), my personal choice, but these CMake scripts should work with any build system.
 
 ## Compiling
 
