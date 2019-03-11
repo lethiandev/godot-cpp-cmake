@@ -1,75 +1,39 @@
-# CMake for Godot C++ Bindings
+# CMake Build Scripts for GDNative C++ Bindings
 
-This project provides CMake scripts for compiling a Godot C++ bindings to simplify the cross-platform library building.
+This repo contains CMake scripts to ease cross-platform building of GDNative C++ bindings.
 
-CMake scripts are updated to work with Nativescript 1.1 API (Godot 3.1), if you're looking for Nativescript 1.0 compatible version with Godot 3.0, checkout 3.0 branch instead.
+Requires at least Godot Engine 3.1 RC1 with NativeScript 1.1. May work with older Godot Engine releases, but it's not tested.
 
-First of all, clone this repo with a `--recurse-submodules` option. It'll clone the repo with the required submodules as well.
+To begin, clone this repo with `--recurse-submodules` option. It'll clone the repo with all required dependencies such as godot-cpp and godot_headers direct from github's repository.
+
+## Prerequisite
+
+You need [CMake](https://cmake.org/) generator at least 3.10 version and [Android SDK](https://developer.android.com/studio) with NDK bundle. Optionally you can use [Ninja build system](https://ninja-build.org/), my personal choice, but these CMake scripts should work with any build system.
 
 ## Compiling
 
-You'll need a CMake generator at least 3.10.0 version installed on your environment. You can obtain the generator from the official [CMake website](https://cmake.org/). Also download and add a [Ninja build system](https://ninja-build.org/) into your system's `PATH` variable.
-
-### Windows
-
-On Windows, you'll need a MinGW or a Visual Studio (express editions will work too) compiler installed on your environment.
-
-1. Make a new directory under the `build` root directory.
-```
-mkdir build\windows
-```
-2. Move to the newly created directory.
-```
-cd build\windows
-```
-3. Run the CMake generator.
-
-```bash
-cmake -G Ninja ..\.. -DCMAKE_CXX_COMPILER=cl
-# or by using a MinGW with a GNU's compiler:
-cmake -G Ninja ..\.. -DCMAKE_CXX_COMPILER=g++
-```
-
-To choose between the build targets - `Debug` and `Release`, use the `-DCMAKE_BUILD_TYPE=<Target>` option.
-
-```bash
-# i.e. for release library build
-cmake -G Ninja ..\.. -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Release
-```
-
-CMake'll run a Godot C++ Bindings generator only once on a configuration step. To start building the static library, just type a `ninja` command.
-
-```bash
-ninja
-```
-
-The static library is stored under the `lib` root directory.
-
-### Linux
-
-On Linux, the process is similar to the Windows build steps, but may require some changes. Instead of the `windows` directory, create a `linux` directory and use a GNU's `g++` compiler instead of the `cl`. Also remember about the path separators. The backslashes `\` are used on Windows and slashes `/` on linuxes.
-
-```bash
-cmake -G Ninja ../.. -DCMAKE_CXX_COMPILER=g++
-```
-
-And run the build by typing a `ninja` command in the terminal.
-
-```bash
-ninja
-```
-
-Static library is stored under  the `lib` root directory.
-
-### Android
-
-To build an Android version of the library, use a CMake with an option `CMAKE_SYSTEM_NAME=Android`. Also remember to create a `android` directory under the `build` root directory.
+The best approach to compile the library is to create a subdirectory under the /build path. For example, for _Windows x64_ build, name the subdirectory as _win64_ and open it in Command Prompt. For MSVC build, use MSVC's Native Commands Prompt. To start, generate Ninja build files (or any other build system supported by your environment) using CMake as:
 
 ```
-cmake -G Ninja ../.. -DCMAKE_SYSTEM_NAME=Android
-ninja
+cd build\win64
+cmake -G Ninja ..\.. -DGODOT_API_JSON=C:\Path\To\godot_json.api
 ```
 
-To change a build architecture, you may need to edit the `CMakeCache.txt` file.
+This should work with Linux the same way. But for Android, it gets a bit more complicated. You should ensure that you have latest NDK version installed on your system with CMake toolchain file bundled. Assuming you have configured Android SDK properly, you can run the CMake tool with specified definitions:
 
-Static library can be found under the `lib` root directory.
+```
+cd build\android
+cmake -G Ninja ..\.. -DCMAKE_TOOLCHAIN_FILE=%ANDROID_NDK_ROOT%\build\cmake\android.toolchain.cmake -DCMAKE_SYSTEM_NAME=Android -DGODOT_API_JSON=C:\Path\To\godot_json.api
+```
+
+Notice that we're using `%ANDROID_NDK_ROOT%` environment variable, ensure first that it's available on your system to continue.
+
+To build release (optimized) targets, use CMake's -DCMAKE_BUILD_TYPE option as `-DCMAKE_BUILD_TYPE=Release`. Built libraries should be located under the /lib root directory.
+
+## Troubleshooting
+
+If you don't know how to obtain godot_json.api file, just run Godot.exe within a Command Prompt with an `--gdnative-generate-json-api` option, just like:
+
+```
+Godot.exe --gdnative-generate-json-api godot_json.api
+```
