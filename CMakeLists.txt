@@ -20,12 +20,13 @@ endif()
 # Default Android settings to follow Godot's build
 # Use $ANDROID_NDK_ROOT/build/cmake/android.toolchain.cmake toolchain
 if(CMAKE_SYSTEM_NAME STREQUAL Android)
-	set(ANDROID_PLATFORM "platform-28" CACHE STRING "Android target platform API level")
+	set(ANDROID_PLATFORM android-28 CACHE STRING "Android target platform API level")
 	set(ANDROID_ABI armeabi-v7a CACHE STRING "Android target ABI architecture")
 	set(ANDROID_TOOLCHAIN clang)
 	set(ANDROID_STL c++_shared)
 endif()
 
+# Start GodotCpp library project
 project(GodotCpp VERSION 1.0.0 LANGUAGES CXX)
 
 # Force MSVC to statically linking with CRT
