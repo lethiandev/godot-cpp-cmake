@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10.0 FATAL_ERROR)
 
 # GODOT_API_JSON variable is REQUIRED
-set(GODOT_API_JSON "" CACHE PATH "Path to godot_api.json file for bindings generator")
+set(GODOT_API_JSON "" CACHE FILEPATH "Path to godot_api.json file for bindings generator")
 if (NOT EXISTS "${GODOT_API_JSON}" OR IS_DIRECTORY "${GODOT_API_JSON}")
 	message(FATAL_ERROR "Path GODOT_API_JSON to godot_api.json file is required")
 endif()
