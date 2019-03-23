@@ -20,6 +20,7 @@ endif()
 # Default Android settings to follow Godot's build
 # Use $ANDROID_NDK_ROOT/build/cmake/android.toolchain.cmake toolchain
 if(CMAKE_SYSTEM_NAME STREQUAL Android)
+	set(CMAKE_TOOLCHAIN_FILE "$ENV{ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake" CACHE FILEPATH "Android NDK's CMake toolchain file")
 	set(ANDROID_PLATFORM android-28 CACHE STRING "Android target platform API level")
 	set(ANDROID_ABI armeabi-v7a CACHE STRING "Android target ABI architecture")
 	set(ANDROID_TOOLCHAIN clang)

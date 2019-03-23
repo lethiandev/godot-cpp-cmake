@@ -23,10 +23,12 @@ This should work with Linux the same way. But for Android, it gets a bit more co
 
 ```
 cd build\android
-cmake -G Ninja ..\.. -DCMAKE_TOOLCHAIN_FILE=%ANDROID_NDK_ROOT%\build\cmake\android.toolchain.cmake -DCMAKE_SYSTEM_NAME=Android -DGODOT_API_JSON=C:\Path\To\godot_json.api
+cmake -G Ninja ..\.. -DCMAKE_SYSTEM_NAME=Android -DGODOT_API_JSON=C:\Path\To\godot_json.api
 ```
 
-Notice that we're using `%ANDROID_NDK_ROOT%` environment variable, ensure first that it's available on your system as well. Also remember to use `-DCMAKE_SYSTEM_NAME=Android` flag, as it does Android build preparations.
+For Android build, CMake tries to find Android NDK's CMake Toolchain automatically using `ANDROID_NDK_ROOT` environment variable. Ensure first, that it's available on your system. Also remember to use `-DCMAKE_SYSTEM_NAME=Android` flag, as it does Android build preparations.
+
+If you wish, you can supply toolchain file manually by defining `CMAKE_TOOLCHAIN_FILE` variable pointing to the toolchain file.
 
 To build release (optimized) targets, use CMake's -DCMAKE_BUILD_TYPE option as `-DCMAKE_BUILD_TYPE=Release`. Built libraries should be located under the /lib root directory.
 
