@@ -105,3 +105,9 @@ set_target_properties(GodotCppLibrary PROPERTIES
 	LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
 	RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib"
 )
+
+if(CMAKE_SYSTEM_NAME STREQUAL Emscripten)
+	set_target_properties(GodotCppLibrary PROPERTIES
+		OUTPUT_NAME_MINSIZEREL "godot-cpp.${LIB_SUFFIX_RELEASE}"
+	)
+endif()
