@@ -11,12 +11,6 @@ if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
-# Allow CMAKE_BUILD_TYPE only to be one of the Debug and Release targets
-set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
-if(NOT ${CMAKE_BUILD_TYPE} IN_LIST CMAKE_CONFIGURATION_TYPES)
-	message(FATAL_ERROR "CMAKE_BUILD_TYPE can be one of the [Release|Debug] options")
-endif()
-
 # Default Android settings to follow Godot's build
 # Use $ANDROID_NDK_ROOT/build/cmake/android.toolchain.cmake toolchain
 if(CMAKE_SYSTEM_NAME STREQUAL Android)
