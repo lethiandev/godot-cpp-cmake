@@ -30,6 +30,8 @@ For Android build, CMake tries to find Android NDK's CMake Toolchain automatical
 
 If you wish, you can supply toolchain file manually by defining `CMAKE_TOOLCHAIN_FILE` variable pointing to the toolchain file.
 
+Experimental Emscripten build is available too, but GDNative on JavaScript platform is currently not officialy supported by Godot Engine developers. To build for Emscripten, use `-DCMAKE_SYSTEM_NAME=Emscripten` flag. As like for Android target, CMake script will try to find Emscripten's toolchain using EMSCRIPTEN environment variable.
+
 To build release (optimized) targets, use CMake's -DCMAKE_BUILD_TYPE option as `-DCMAKE_BUILD_TYPE=Release`. Built libraries should be located under the /lib root directory.
 
 ## Troubleshooting

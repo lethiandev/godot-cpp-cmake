@@ -27,6 +27,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL Android)
 	set(ANDROID_STL c++_shared)
 endif()
 
+# Settings for Emscripten build
+# Use $EMSCRIPTEN/cmake/Modules/Platform/Emscripten.cmake toolchain
+if(CMAKE_SYSTEM_NAME STREQUAL Emscripten)
+	set(CMAKE_TOOLCHAIN_FILE "$ENV{EMSCRIPTEN}/cmake/Modules/Platform/Emscripten.cmake" CACHE FILEPATH "Emscripten's CMake toolchain file")
+endif()
+
 # Start GodotCpp library project
 project(GodotCpp VERSION 1.0.0 LANGUAGES CXX)
 
@@ -76,6 +82,9 @@ target_compile_features(GodotCppLibrary PUBLIC
 if(CMAKE_SYSTEM_NAME STREQUAL Android)
 	set(LIB_SUFFIX_DEBUG "android.${ANDROID_ABI}")
 	set(LIB_SUFFIX_RELEASE "android.opt.${ANDROID_ABI}")
+elseif(CMAKE_SYSTEM_NAME STREQUAL Emscripten)
+	set(LIB_SUFFIX_DEBUG "javascript")
+	set(LIB_SUFFIX_RELEASE "javascript.opt")
 else()
 	if(WIN32)
 		set(LIB_SUFFIX_DEBUG "windows")
