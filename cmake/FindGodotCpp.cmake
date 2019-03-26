@@ -48,19 +48,13 @@ else()
 	set(GODOT_CPP_LIBRARY_NAME "${GODOT_CPP_LIBRARY_NAME}.${GODOT_CPP_LIB_SUFFIX_DEBUG}")
 endif()
 
-# Fix Android's CMake Toolchain to allow finding host libraries
-if(CMAKE_SYSTEM_NAME STREQUAL Android)
-	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
-	set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
-endif()
-
 # Find include directories
-find_path(GODOT_CPP_INCLUDE_DIR_HEADERS gdnative_api_struct.gen.h HINTS "${GODOT_CPP_PATH}/godot-cpp" PATH_SUFFIXES godot_headers)
-find_path(GODOT_CPP_INCLUDE_DIR_CORE core/Godot.hpp HINTS "${GODOT_CPP_PATH}/godot-cpp" PATH_SUFFIXES include)
-find_path(GODOT_CPP_INCLUDE_DIR_GEN gen/Object.hpp HINTS "${GODOT_CPP_PATH}/godot-cpp" PATH_SUFFIXES include)
+find_path(GODOT_CPP_INCLUDE_DIR_HEADERS gdnative_api_struct.gen.h HINTS "${GODOT_CPP_PATH}/godot-cpp" PATH_SUFFIXES godot_headers NO_CMAKE_FIND_ROOT_PATH)
+find_path(GODOT_CPP_INCLUDE_DIR_CORE core/Godot.hpp HINTS "${GODOT_CPP_PATH}/godot-cpp" PATH_SUFFIXES include NO_CMAKE_FIND_ROOT_PATH)
+find_path(GODOT_CPP_INCLUDE_DIR_GEN gen/Object.hpp HINTS "${GODOT_CPP_PATH}/godot-cpp" PATH_SUFFIXES include NO_CMAKE_FIND_ROOT_PATH)
 
 # Find the library
-find_library(GODOT_CPP_LIBRARY "${GODOT_CPP_LIBRARY_NAME}" HINTS "${GODOT_CPP_PATH}" PATH_SUFFIXES lib)
+find_library(GODOT_CPP_LIBRARY "${GODOT_CPP_LIBRARY_NAME}" HINTS "${GODOT_CPP_PATH}" PATH_SUFFIXES lib NO_CMAKE_FIND_ROOT_PATH)
 
 # Handle find_package's QUIET, REQUIRED etc. arguments
 include(FindPackageHandleStandardArgs)

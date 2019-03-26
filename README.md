@@ -43,15 +43,3 @@ Godot.exe --gdnative-generate-json-api godot_json.api
 ```
 
 Generated godot_json.api file should be located inside the same directtory as Godot executable.
-
-If you ever encountered _NOTFOUND_ problem using `find_path/library` commands and you're using Android NDK's CMake Toolchain, it may be caused because Android NDK's Toolchain sets options `CMAKE_FIND_ROOT_PATH_MODE_LIBRARY/INCLUDE` to use only sysroot path. Put code shown below after `project` or before first use of `find_path/library`. It re-enables finding host located files.
-
-```cmake
-# Fix Android's CMake Toolchain to allow finding host libraries
-if(CMAKE_SYSTEM_NAME STREQUAL Android)
-	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
-	set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
-endif()
-```
-
-It may require to be disabled when no more in use.
