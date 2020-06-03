@@ -39,7 +39,7 @@ endif()
 
 # Generate Godot's GDNative <-> C++ bindings using JSON file
 message(STATUS "Generating Godot C++ binding source files...")
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/godot-cpp/src/gen/__icalls.cpp")
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/godot-cpp/include/gen/__icalls.hpp")
 	set(GENERATOR_COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/generate.py")
 	set(GENERATOR_COMMAND "${GENERATOR_COMMAND}" "${GODOT_API_JSON}")
 	execute_process(
