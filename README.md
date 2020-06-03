@@ -17,7 +17,7 @@ Before start building, you need [CMake 3.10+](https://cmake.org/) build scripts 
 
 ## Compiling
 
-It's advisable to create separate subdirectories for each target platforms inside `/build` directory. For example, for _Windows x64_ build, name the subdirectory as `win64` and open it within Command Prompt (or Terminal, depends on your OS). For MSVC build, use MSVC's Native Command Prompt (x86 or x64). After the preparation, generate build scripts beeing inside the platform build directory using CMake as:
+It's advisable to create separate subdirectories for each target platforms inside `/build` directory. For example, for _Windows x64_ build, name the subdirectory as `win64` and open it within Command Prompt (or Terminal, depends on your OS). For MSVC build, use MSVC's Native Command Prompt (x86 or x64). After the preparation, generate build scripts being inside the platform build directory using CMake as:
 
 ```
 cd build\win64
